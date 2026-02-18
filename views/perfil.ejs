@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil | Formablog</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/perfil.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="/dashboard" class="logo" style="text-decoration: none; color: inherit;">Formablog</a>
+            <div class="nav-actions">
+                <a href="/logout" class="logout-link">Cerrar sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <header class="profile-header" style="background-image: url('<%= user.foto_portada %>');">
+            <div class="header-overlay">
+                <div class="header-top">
+                    <div class="user-meta">
+                        <div class="avatar-preview">
+                            <img src="<%= user.foto_perfil || '/img/default-avatar.png' %>" alt="Avatar">
+                        </div>
+                        <div class="user-titles">
+                            <h1>
+                                <%= user.nombre %>
+                            </h1>
+                            <p class="stats"><strong>
+                                    <%= totalPosts %>
+                                </strong> publicaciones</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-bottom">
+                    <p class="bio-text">
+                        <%= user.descripcion || 'Escribe algo sobre ti...' %>
+                    </p>
+                    <a href="/perfil/editar" class="edit-btn" style="text-decoration: none;">Editar Perfil</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="user-content">
+            <h2>Mis publicaciones</h2>
+            <div class="feed">
+                <% if (publicaciones.length> 0) { %>
+                    <% publicaciones.forEach(post=> { %>
+                        <article class="post-card">
+                            <div class="post-header">
+                                <span class="category-tag">
+                                    <%= post.categoria %>
+                                </span>
+                            </div>
+                            <h2>
+                                <%= post.titulo %>
+                            </h2>
+                            <p class="post-excerpt">
+                                <%= post.contenido %>
+                            </p>
+                            <div class="post-footer">
+                                <span class="post-date">
+                                    <%= new Date(post.fecha_publicacion).toLocaleDateString() %>
+                                </span>
+                            </div>
+                        </article>
+                        <% }) %>
+                            <% } else { %>
+                                <p class="empty-msg">Aún no has publicado nada.</p>
+                                <% } %>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

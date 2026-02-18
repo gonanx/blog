@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Formablog</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="/dashboard" class="logo" style="text-decoration: none; color: inherit;">Formablog</a>
+            <div class="nav-actions">
+                <a href="/perfil" class="profile-link">
+                    <img src="<%= user.foto_perfil || '/img/default-avatar.png' %>" alt="Perfil" class="nav-avatar">
+                    <span>
+                        <%= user.nombre %>
+                    </span>
+                </a>
+                <a href="/logout" class="logout-link">Cerrar sesión</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <header class="welcome-section">
+            <h1>Explorar</h1>
+            <p>Bienvenido de nuevo, <%= user.nombre %>.</p>
+        </header>
+
+        <section class="feed">
+            <% if (publicaciones.length> 0) { %>
+                <% publicaciones.forEach(post=> { %>
+                    <article class="post-card"
+                        onclick="openModal('<%= post.id_publicacion %>', '<%= post.titulo.replace(/'/g, '&#39;') %>', '<%= post.autor %>', '<%= post.autor_id %>', '<%= post.categoria %>', '<%= post.contenido.replace(/\n/g, '<br>').replace(/'/g, '&#39;') %>', '<%= new Date(post.fecha_publicacion).toLocaleDateString() %>', '<%= user.id %>')">
+                        <div class="post-header">
+                            <span class="category-tag">
+                                <%= post.categoria %>
+                            </span>
+                        </div>
+                        <h2>
+                            <%= post.titulo %>
+                        </h2>
+                        <p class="post-excerpt">
+                            <%= post.contenido %>
+                        </p>
+
+                        <div class="post-footer">
+                            <div class="interactions">
+                                <% if (user.id !=post.autor_id) { %>
+                                    <form action="/publicacion/like/<%= post.id_publicacion %>" method="POST"
+                                        style="display:inline;" onclick="event.stopPropagation();">
+                                        <button type="submit" class="interaction-btn like-btn">
+                                            ❤️ <%= post.total_megusta %>
+                                        </button>
+                                    </form>
+                                    <% } else { %>
+                                        <div class="my-post-stats">
+                                            <span class="stat-icon">❤️</span>
+                                            <span class="stat-count">
+                                                <%= post.total_megusta %>
+                                            </span>
+                                        </div>
+                                        <% } %>
+                                            <span class="interaction-stat">💬 <%= post.total_comentarios %></span>
+
+                                            <span class="post-date" style="margin-left: 5px;">
+                                                <%= new Date(post.fecha_publicacion).toLocaleDateString() %>
+                                            </span>
+                            </div>
+                            <span class="post-author">@<%= post.autor %></span>
+                        </div>
+                    </article>
+                    <% }) %>
+                        <% } else { %>
+                            <p class="empty-msg">No hay publicaciones disponibles.</p>
+                            <% } %>
+        </section>
+    </main>
+
+    <button class="fab" onclick="openCreateModal()">+</button>
+
+    <div id="postModal" class="modal-overlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+
+            <div id="viewMode">
+                <div class="post-header">
+                    <span id="modalCategory" class="category-tag"></span>
+                    <span id="modalDate" class="post-date"></span>
+                </div>
+                <h1 id="modalTitle"></h1>
+                <div id="modalBody" class="modal-body"></div>
+
+                <div class="post-footer">
+                    <div id="adminActions" style="display: none; gap: 15px;">
+                        <button onclick="showEditForm()" class="interaction-btn"
+                            style="color: var(--apple-blue); font-weight: 600;">Editar</button>
+                        <form id="deleteForm" method="POST" style="display: inline;">
+                            <button type="submit" class="interaction-btn" style="color: #ff3b30; font-weight: 600;"
+                                onclick="return confirm('¿Eliminar esta publicación?')">Eliminar</button>
+                        </form>
+                    </div>
+                    <span class="post-author" id="modalAuthor"></span>
+                </div>
+            </div>
+
+            <div id="editMode" style="display: none;">
+                <div class="create-post-card">
+                    <h2>Editar publicación</h2>
+                    <form id="editPostForm" method="POST">
+                        <div class="form-group">
+                            <label>Título</label>
+                            <input type="text" name="titulo" id="editTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Contenido</label>
+                            <textarea name="contenido" id="editContent" rows="8" required></textarea>
+                        </div>
+                        <div style="display: flex; gap: 12px; margin-top: 20px;">
+                            <button type="submit" class="submit-post-btn" style="margin-top:0; flex: 2;">Guardar
+                                cambios</button>
+                            <button type="button" onclick="hideEditForm()" class="submit-post-btn"
+                                style="margin-top:0; flex: 1; background: #e5e5ea; color: var(--text-primary);">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="createModal" class="modal-overlay" onclick="closeCreateModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeCreateModal()">&times;</button>
+            <div class="create-post-card">
+                <h2>Nueva publicación</h2>
+                <form action="/publicacion/crear" method="POST">
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" name="titulo" placeholder="¿Sobre qué quieres escribir?" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select name="id_categoria" required>
+                            <% categorias.forEach(cat=> { %>
+                                <option value="<%= cat.id_categoria %>">
+                                    <%= cat.nombre %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Contenido</label>
+                        <textarea name="contenido" rows="6" placeholder="Escribe aquí tu historia..."
+                            required></textarea>
+                    </div>
+                    <button type="submit" class="submit-post-btn">Publicar ahora</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id, titulo, autor, autorId, categoria, contenido, fecha, currentUserId) {
+            hideEditForm();
+
+            document.getElementById('modalTitle').innerText = titulo;
+            document.getElementById('modalAuthor').innerText = '@' + autor;
+            document.getElementById('modalCategory').innerText = categoria;
+            document.getElementById('modalDate').innerText = fecha;
+            document.getElementById('modalBody').innerHTML = contenido;
+
+            const adminActions = document.getElementById('adminActions');
+            if (currentUserId == autorId) {
+                adminActions.style.display = 'flex';
+                document.getElementById('deleteForm').action = '/publicacion/eliminar/' + id;
+                document.getElementById('editPostForm').action = '/publicacion/editar/' + id;
+                document.getElementById('editTitle').value = titulo;
+                document.getElementById('editContent').value = contenido.replace(/<br>/g, '\n');
+            } else {
+                adminActions.style.display = 'none';
+            }
+
+            document.getElementById('postModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function showEditForm() {
+            document.getElementById('viewMode').style.display = 'none';
+            document.getElementById('editMode').style.display = 'block';
+        }
+
+        function hideEditForm() {
+            document.getElementById('viewMode').style.display = 'block';
+            document.getElementById('editMode').style.display = 'none';
+        }
+
+        function closeModal() {
+            document.getElementById('postModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openCreateModal() {
+            document.getElementById('createModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+
+</html>

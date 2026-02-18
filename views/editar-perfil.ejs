@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Perfil | Formablog</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/perfil.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <style>
+        .cropper-container-wrapper {
+            display: none;
+            margin-bottom: 20px;
+            max-width: 100%;
+            height: 400px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #imageToCrop {
+            max-width: 100%;
+        }
+
+        .crop-controls {
+            display: none;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a href="/dashboard" class="logo" style="text-decoration: none; color: inherit;">Formablog</a>
+            <div class="nav-actions">
+                <a href="/perfil" class="logout-link">Volver al perfil</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <section class="edit-profile-section">
+            <div class="edit-card-full">
+                <h2>Ajustar mi información</h2>
+
+                <div class="cropper-container-wrapper" id="cropperWrapper">
+                    <img id="imageToCrop">
+                </div>
+                <div class="crop-controls" id="cropControls">
+                    <button type="button" class="save-btn-full" id="confirmCrop">Confirmar recorte</button>
+                    <button type="button" class="cancel-btn-full" id="cancelCrop">Cancelar</button>
+                </div>
+
+                <form action="/perfil/editar" method="POST" class="edit-form-full" id="profileForm">
+                    <div class="form-group">
+                        <label>Nombre de usuario</label>
+                        <input type="text" name="nombre" value="<%= user.nombre %>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Foto de Perfil (Avatar)</label>
+                        <input type="file" id="inputAvatar" accept="image/*">
+                        <input type="hidden" name="avatar_blob" id="avatarBlob">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Foto de Portada</label>
+                        <input type="file" id="inputPortada" accept="image/*">
+                        <input type="hidden" name="portada_blob" id="portadaBlob">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Biografía / Descripción</label>
+                        <textarea name="descripcion" rows="4"><%= user.descripcion %></textarea>
+                    </div>
+
+                    <div class="form-actions-full">
+                        <a href="/perfil" class="cancel-btn-full">Cancelar</a>
+                        <button type="submit" class="save-btn-full">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        let cropper;
+        const imageToCrop = document.getElementById('imageToCrop');
+        const cropperWrapper = document.getElementById('cropperWrapper');
+        const cropControls = document.getElementById('cropControls');
+        const form = document.getElementById('profileForm');
+        let currentTarget = '';
+
+        function initCropper(e, target, aspect) {
+            const file = e.target.files[0];
+            if (!file) return;
+            currentTarget = target;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                imageToCrop.src = event.target.result;
+                cropperWrapper.style.display = 'block';
+                cropControls.style.display = 'flex';
+                form.style.display = 'none';
+
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: aspect,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('inputAvatar').addEventListener('change', (e) => initCropper(e, 'avatar', 1));
+        document.getElementById('inputPortada').addEventListener('change', (e) => initCropper(e, 'portada', 3 / 1));
+
+        document.getElementById('confirmCrop').addEventListener('click', () => {
+            const canvas = cropper.getCroppedCanvas({
+                width: currentTarget === 'avatar' ? 400 : 1200,
+                height: currentTarget === 'avatar' ? 400 : 400
+            });
+
+            document.getElementById(currentTarget + 'Blob').value = canvas.toDataURL('image/jpeg', 0.9);
+
+            cropperWrapper.style.display = 'none';
+            cropControls.style.display = 'none';
+            form.style.display = 'block';
+        });
+
+        document.getElementById('cancelCrop').addEventListener('click', () => {
+            cropperWrapper.style.display = 'none';
+            cropControls.style.display = 'none';
+            form.style.display = 'block';
+            if (cropper) cropper.destroy();
+        });
+    </script>
+</body>
+
+</html>

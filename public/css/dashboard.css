@@ -1,0 +1,433 @@
+:root {
+    --apple-gray-bg: #f5f5f7;
+    --apple-blue: #0071e3;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --white: #ffffff;
+    --border-radius-lg: 28px;
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    background-color: var(--apple-gray-bg);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+.navbar {
+    height: 60px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.nav-content {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    color: inherit;
+}
+
+.profile-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 14px;
+    transition: opacity 0.2s;
+}
+
+.nav-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #e5e5ea;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.logout-link {
+    color: var(--apple-blue);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.dashboard-container {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 0 24px;
+}
+
+.welcome-section h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: 8px;
+}
+
+.welcome-section p {
+    color: var(--text-secondary);
+    font-size: 20px;
+    margin-bottom: 40px;
+}
+
+.feed {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.post-card,
+.modal-content {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column;
+}
+
+.post-card {
+    padding: 35px;
+    height: 350px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+}
+
+.post-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+.category-tag {
+    background: #f2f2f7;
+    color: var(--apple-blue);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    align-self: flex-start;
+    margin-bottom: 20px;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.post-date {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+h2,
+.modal-content h1 {
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 15px;
+}
+
+.post-card h2 {
+    font-size: 24px;
+}
+
+.modal-content h1 {
+    font-size: 36px;
+}
+
+.post-excerpt,
+.modal-body {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    flex-grow: 1;
+}
+
+.post-card .post-excerpt {
+    font-size: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.modal-body {
+    font-size: 19px;
+    color: var(--text-primary);
+}
+
+.post-footer {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.interactions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.interaction-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-size: 15px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    outline: none;
+    transition: opacity 0.2s;
+}
+
+.interaction-btn:hover {
+    opacity: 0.7;
+}
+
+.interaction-stat,
+.my-post-stats {
+    font-size: 15px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.my-post-stats {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.post-author {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s ease;
+    z-index: 2000;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 800px;
+    max-height: 85vh;
+    padding: 50px;
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow-y: auto;
+    transform: translateY(30px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.active .modal-content {
+    transform: translateY(0);
+}
+
+.close-modal {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: #f2f2f7;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fab {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    width: 65px;
+    height: 65px;
+    background-color: var(--apple-blue);
+    color: var(--white);
+    border-radius: 50%;
+    border: none;
+    font-size: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0, 113, 227, 0.3);
+    z-index: 1000;
+    transition: transform 0.3s ease, background-color 0.2s;
+}
+
+.fab:hover {
+    transform: scale(1.1);
+    background-color: #0077ed;
+}
+
+.create-post-card h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+}
+
+.create-post-card .form-group {
+    margin-bottom: 20px;
+}
+
+.create-post-card label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.create-post-card input,
+.create-post-card select,
+.create-post-card textarea {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid #d2d2d7;
+    background: #f5f5f7;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.create-post-card textarea {
+    resize: none;
+}
+
+.submit-post-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--apple-blue);
+    color: white;
+    border: none;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#adminActions {
+    margin-top: 10px;
+}
+
+#adminActions .interaction-btn {
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: #f2f2f7;
+    transition: background 0.2s ease;
+}
+
+#adminActions .interaction-btn:hover {
+    background: #e5e5ea;
+    opacity: 1;
+}
+
+#editMode .create-post-card {
+    padding: 0;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+}
+
+#editMode h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+#editMode textarea {
+    min-height: 250px;
+    line-height: 1.6;
+}
+
+#editMode .submit-post-btn:last-child {
+    transition: background 0.2s;
+}
+
+#editMode .submit-post-btn:last-child:hover {
+    background: #d1d1d6;
+}
+
+@media (max-width: 1024px) {
+    .feed {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .feed {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        padding: 30px;
+    }
+
+    .fab {
+        bottom: 25px;
+        right: 25px;
+    }
+}
