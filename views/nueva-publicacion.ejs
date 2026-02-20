@@ -17,7 +17,7 @@
         </div>
     </nav>
 
-    <main class="editor-container">
+    <main class="editor-container" id="editorContainer">
         <form action="/publicacion/nueva" method="POST">
             <div class="input-group">
                 <input type="text" name="titulo" placeholder="Título de la publicación" required class="title-input">
@@ -39,11 +39,47 @@
                     class="content-textarea"></textarea>
             </div>
 
+            <div class="color-section">
+                <label>Color de fondo</label>
+                <div class="color-picker-wrapper">
+                    <span id="colorHex">#FFFFFF</span>
+                    <input type="color" name="color_caja" id="colorPicker" value="#ffffff">
+                </div>
+            </div>
+
             <div class="editor-footer">
                 <button type="submit" class="publish-btn">Publicar ahora</button>
             </div>
         </form>
     </main>
+
+    <script>
+        const colorPicker = document.getElementById('colorPicker');
+        const colorHex = document.getElementById('colorHex');
+        const container = document.getElementById('editorContainer');
+
+        function getContrastYIQ(hexcolor) {
+            hexcolor = hexcolor.replace("#", "");
+            const r = parseInt(hexcolor.substr(0, 2), 16);
+            const g = parseInt(hexcolor.substr(2, 2), 16);
+            const b = parseInt(hexcolor.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#1d1d1f' : '#ffffff';
+        }
+
+        colorPicker.addEventListener('input', (e) => {
+            const color = e.target.value;
+            const textColor = getContrastYIQ(color);
+
+            colorHex.textContent = color.toUpperCase();
+            container.style.backgroundColor = color;
+            container.style.color = textColor;
+
+            document.querySelectorAll('.title-input, .category-select, .content-textarea, .color-section label, #colorHex').forEach(el => {
+                el.style.color = textColor;
+            });
+        });
+    </script>
 </body>
 
 </html>

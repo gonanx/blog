@@ -72,6 +72,7 @@ const authController = {
                     p.titulo, 
                     p.contenido, 
                     p.fecha_publicacion, 
+                    p.color_caja,
                     p.id_usuario AS autor_id,
                     u.nombre AS autor, 
                     c.nombre AS categoria,

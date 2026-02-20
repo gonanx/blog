@@ -6,12 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Formablog</title>
     <link rel="stylesheet" href="/css/dashboard.css">
+    <script>
+        function getContrastYIQ(hexcolor) {
+            if (!hexcolor) return '#1d1d1f';
+            hexcolor = hexcolor.replace("#", "");
+            const r = parseInt(hexcolor.substr(0, 2), 16);
+            const g = parseInt(hexcolor.substr(2, 2), 16);
+            const b = parseInt(hexcolor.substr(4, 2), 16);
+            const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (yiq >= 128) ? '#1d1d1f' : '#ffffff';
+        }
+
+        function updateLivePreview(picker, containerId, isEdit = false) {
+            const color = picker.value;
+            const container = document.querySelector(`#${containerId} .modal-content`);
+            const label = document.getElementById(isEdit ? 'editColorValue' : 'createColorValue');
+
+            if (label) label.textContent = color.toUpperCase();
+
+            if (container && (!isEdit || document.getElementById('editMode').style.display === 'block')) {
+                const textColor = getContrastYIQ(color);
+                container.style.backgroundColor = color;
+                container.style.color = textColor;
+
+                container.querySelectorAll('h1, h2, label, span, input, textarea, select, .post-date, .post-author, .comments-title, .modal-body').forEach(el => {
+                    if (!el.classList.contains('submit-post-btn')) {
+                        el.style.color = 'inherit';
+                    }
+                });
+            }
+        }
+    </script>
 </head>
 
 <body>
     <nav class="navbar">
         <div class="nav-content">
-            <a href="/dashboard" class="logo" style="text-decoration: none; color: inherit;">Formablog</a>
+            <a href="/dashboard" class="logo">Formablog</a>
             <div class="nav-actions">
                 <a href="/perfil" class="profile-link">
                     <img src="<%= user.foto_perfil || '/img/default-avatar.png' %>" alt="Perfil" class="nav-avatar">
@@ -33,50 +64,46 @@
         <section class="feed">
             <% if (publicaciones.length> 0) { %>
                 <% publicaciones.forEach(post=> { %>
-                    <article class="post-card"
-                        onclick="openModal('<%= post.id_publicacion %>', '<%= post.titulo.replace(/'/g, '&#39;') %>', '<%= post.autor %>', '<%= post.autor_id %>', '<%= post.categoria %>', '<%= post.contenido.replace(/\n/g, '<br>').replace(/'/g, '&#39;') %>', '<%= new Date(post.fecha_publicacion).toLocaleDateString() %>', '<%= user.id %>')">
-                        <div class="post-header">
-                            <span class="category-tag">
-                                <%= post.categoria %>
-                            </span>
-                        </div>
-                        <h2>
-                            <%= post.titulo %>
-                        </h2>
-                        <p class="post-excerpt">
-                            <%= post.contenido %>
-                        </p>
+                    <% const hex=(post.color_caja || '#ffffff' ).replace("#", "" ); const r=parseInt(hex.substr(0, 2),
+                        16); const g=parseInt(hex.substr(2, 2), 16); const b=parseInt(hex.substr(4, 2), 16); const
+                        yiq=((r * 299) + (g * 587) + (b * 114)) / 1000; const textColor=(yiq>= 128) ? '#1d1d1f' :
+                        '#ffffff';
+                        %>
+                        <article class="post-card"
+                            style="background-color: <%= post.color_caja || '#ffffff' %>; color: <%= textColor %>;"
+                            onclick="openModal('<%= post.id_publicacion %>', '<%= post.titulo.replace(/'/g, '&#39;') %>', '<%= post.autor %>', '<%= post.autor_id %>', '<%= post.categoria %>', '<%= post.contenido.replace(/\n/g, '<br>').replace(/'/g, '&#39;') %>', '<%= new Date(post.fecha_publicacion).toLocaleDateString() %>', '<%= user.id %>', '<%= post.color_caja || '#ffffff' %>')">
 
-                        <div class="post-footer">
-                            <div class="interactions">
-                                <% if (user.id !=post.autor_id) { %>
-                                    <form action="/publicacion/like/<%= post.id_publicacion %>" method="POST"
-                                        style="display:inline;" onclick="event.stopPropagation();">
-                                        <button type="submit" class="interaction-btn like-btn">
-                                            ❤️ <%= post.total_megusta %>
-                                        </button>
-                                    </form>
-                                    <% } else { %>
-                                        <div class="my-post-stats">
-                                            <span class="stat-icon">❤️</span>
-                                            <span class="stat-count">
-                                                <%= post.total_megusta %>
-                                            </span>
-                                        </div>
-                                        <% } %>
-                                            <span class="interaction-stat">💬 <%= post.total_comentarios %></span>
-
-                                            <span class="post-date" style="margin-left: 5px;">
-                                                <%= new Date(post.fecha_publicacion).toLocaleDateString() %>
-                                            </span>
+                            <div class="post-header">
+                                <span class="category-tag" style="border: 1px solid currentColor;">
+                                    <%= post.categoria %>
+                                </span>
                             </div>
-                            <span class="post-author">@<%= post.autor %></span>
-                        </div>
-                    </article>
-                    <% }) %>
-                        <% } else { %>
-                            <p class="empty-msg">No hay publicaciones disponibles.</p>
-                            <% } %>
+                            <h2>
+                                <%= post.titulo %>
+                            </h2>
+                            <p class="post-excerpt">
+                                <%= post.contenido %>
+                            </p>
+                            <div class="post-footer">
+                                <div class="interactions">
+                                    <% if (user.id !=post.autor_id) { %>
+                                        <form action="/publicacion/like/<%= post.id_publicacion %>" method="POST"
+                                            style="display:inline;" onclick="event.stopPropagation();">
+                                            <button type="submit" class="interaction-btn">❤️ <%= post.total_megusta %>
+                                                    </button>
+                                        </form>
+                                        <% } else { %>
+                                            <span class="interaction-stat">❤️ <%= post.total_megusta %></span>
+                                            <% } %>
+                                                <span class="interaction-stat">💬 <%= post.total_comentarios %></span>
+                                </div>
+                                <span class="post-author">@<%= post.autor %></span>
+                            </div>
+                        </article>
+                        <% }) %>
+                            <% } else { %>
+                                <p class="empty-msg">No hay publicaciones disponibles.</p>
+                                <% } %>
         </section>
     </main>
 
@@ -88,7 +115,7 @@
 
             <div id="viewMode">
                 <div class="post-header">
-                    <span id="modalCategory" class="category-tag"></span>
+                    <span id="modalCategory" class="category-tag" style="border: 1px solid currentColor;"></span>
                     <span id="modalDate" class="post-date"></span>
                 </div>
                 <h1 id="modalTitle"></h1>
@@ -97,14 +124,24 @@
                 <div class="post-footer">
                     <div id="adminActions" style="display: none; gap: 15px;">
                         <button onclick="showEditForm()" class="interaction-btn"
-                            style="color: var(--apple-blue); font-weight: 600;">Editar</button>
+                            style="font-weight: 600;">Editar</button>
                         <form id="deleteForm" method="POST" style="display: inline;">
-                            <button type="submit" class="interaction-btn" style="color: #ff3b30; font-weight: 600;"
+                            <button type="submit" class="interaction-btn" style="font-weight: 600; color: #ff3b30;"
                                 onclick="return confirm('¿Eliminar esta publicación?')">Eliminar</button>
                         </form>
                     </div>
                     <span class="post-author" id="modalAuthor"></span>
                 </div>
+
+                <section class="comments-section">
+                    <h3 class="comments-title">Comentarios</h3>
+                    <form id="commentForm" method="POST" class="comment-form">
+                        <textarea name="texto" placeholder="Escribe un comentario..." required></textarea>
+                        <button type="submit" class="submit-post-btn"
+                            style="width: auto; padding: 10px 20px; margin-top: 10px;">Enviar</button>
+                    </form>
+                    <div id="commentsList" class="comments-list"></div>
+                </section>
             </div>
 
             <div id="editMode" style="display: none;">
@@ -119,11 +156,19 @@
                             <label>Contenido</label>
                             <textarea name="contenido" id="editContent" rows="8" required></textarea>
                         </div>
+                        <div class="form-group">
+                            <label>Color de fondo</label>
+                            <div class="color-picker-container">
+                                <input type="color" name="color_caja" id="editColor"
+                                    oninput="updateLivePreview(this, 'postModal', true)" required>
+                                <span id="editColorValue">#FFFFFF</span>
+                            </div>
+                        </div>
                         <div style="display: flex; gap: 12px; margin-top: 20px;">
                             <button type="submit" class="submit-post-btn" style="margin-top:0; flex: 2;">Guardar
                                 cambios</button>
                             <button type="button" onclick="hideEditForm()" class="submit-post-btn"
-                                style="margin-top:0; flex: 1; background: #e5e5ea; color: var(--text-primary);">Cancelar</button>
+                                style="margin-top:0; flex: 1; background: #e5e5ea; color: #1d1d1f;">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -156,6 +201,14 @@
                         <textarea name="contenido" rows="6" placeholder="Escribe aquí tu historia..."
                             required></textarea>
                     </div>
+                    <div class="form-group">
+                        <label>Color de fondo</label>
+                        <div class="color-picker-container">
+                            <input type="color" name="color_caja" value="#ffffff" id="createColorPicker"
+                                oninput="updateLivePreview(this, 'createModal')" required>
+                            <span id="createColorValue">#FFFFFF</span>
+                        </div>
+                    </div>
                     <button type="submit" class="submit-post-btn">Publicar ahora</button>
                 </form>
             </div>
@@ -163,8 +216,16 @@
     </div>
 
     <script>
-        function openModal(id, titulo, autor, autorId, categoria, contenido, fecha, currentUserId) {
+        let currentPostColor = '#ffffff';
+
+        async function openModal(id, titulo, autor, autorId, categoria, contenido, fecha, currentUserId, colorCaja) {
             hideEditForm();
+            currentPostColor = colorCaja || '#ffffff';
+            const modalContent = document.querySelector('#postModal .modal-content');
+            const textColor = getContrastYIQ(currentPostColor);
+
+            modalContent.style.backgroundColor = currentPostColor;
+            modalContent.style.color = textColor;
 
             document.getElementById('modalTitle').innerText = titulo;
             document.getElementById('modalAuthor').innerText = '@' + autor;
@@ -179,8 +240,36 @@
                 document.getElementById('editPostForm').action = '/publicacion/editar/' + id;
                 document.getElementById('editTitle').value = titulo;
                 document.getElementById('editContent').value = contenido.replace(/<br>/g, '\n');
+                document.getElementById('editColor').value = currentPostColor;
+                document.getElementById('editColorValue').textContent = currentPostColor.toUpperCase();
             } else {
                 adminActions.style.display = 'none';
+            }
+
+            document.getElementById('commentForm').action = '/publicacion/comentar/' + id;
+            const commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = '<p>Cargando comentarios...</p>';
+
+            try {
+                const response = await fetch('/publicacion/comentarios/' + id);
+                const comentarios = await response.json();
+                commentsList.innerHTML = '';
+                if (comentarios.length === 0) {
+                    commentsList.innerHTML = `<p style="opacity: 0.6; font-size: 14px;">No hay comentarios aún.</p>`;
+                } else {
+                    comentarios.forEach(c => {
+                        const date = new Date(c.fecha_comentario).toLocaleDateString();
+                        commentsList.innerHTML += `
+                            <div class="comment-item" style="border-bottom: 1px solid rgba(128,128,128,0.2); padding: 10px 0;">
+                                <span class="comment-user" style="font-weight: bold;">@${c.nombre}</span>
+                                <p class="comment-text" style="margin: 5px 0;">${c.texto}</p>
+                                <span class="comment-date" style="opacity: 0.6; font-size: 12px;">${date}</span>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (err) {
+                commentsList.innerHTML = '<p>Error al cargar comentarios.</p>';
             }
 
             document.getElementById('postModal').classList.add('active');
@@ -190,11 +279,16 @@
         function showEditForm() {
             document.getElementById('viewMode').style.display = 'none';
             document.getElementById('editMode').style.display = 'block';
+            updateLivePreview(document.getElementById('editColor'), 'postModal', true);
         }
 
         function hideEditForm() {
             document.getElementById('viewMode').style.display = 'block';
             document.getElementById('editMode').style.display = 'none';
+            const modalContent = document.querySelector('#postModal .modal-content');
+            const textColor = getContrastYIQ(currentPostColor);
+            modalContent.style.backgroundColor = currentPostColor;
+            modalContent.style.color = textColor;
         }
 
         function closeModal() {
@@ -203,8 +297,10 @@
         }
 
         function openCreateModal() {
-            document.getElementById('createModal').classList.add('active');
+            const modal = document.getElementById('createModal');
+            modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            updateLivePreview(document.getElementById('createColorPicker'), 'createModal');
         }
 
         function closeCreateModal() {

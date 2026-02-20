@@ -14,13 +14,13 @@ const postController = {
 
     processCreatePost: async (req, res) => {
         if (!req.session.user) return res.redirect('/login');
-        const { titulo, contenido, id_categoria } = req.body;
+        const { titulo, contenido, id_categoria, color_caja } = req.body;
         const id_usuario = req.session.user.id;
 
         try {
             await pool.query(
-                'INSERT INTO publicacion (id_usuario, id_categoria, titulo, contenido, estado, fecha_publicacion) VALUES ($1, $2, $3, $4, $5, NOW())',
-                [id_usuario, id_categoria, titulo, contenido, 'publicado']
+                'INSERT INTO publicacion (id_usuario, id_categoria, titulo, contenido, estado, color_caja, fecha_publicacion) VALUES ($1, $2, $3, $4, $5, $6, NOW())',
+                [id_usuario, id_categoria, titulo, contenido, 'publicado', color_caja || '#ffffff']
             );
             res.redirect('/dashboard');
         } catch (err) {
@@ -32,13 +32,13 @@ const postController = {
     updatePost: async (req, res) => {
         if (!req.session.user) return res.status(401).send('No autorizado');
         const { id_publicacion } = req.params;
-        const { titulo, contenido } = req.body;
+        const { titulo, contenido, color_caja } = req.body;
         const id_usuario = req.session.user.id;
 
         try {
             await pool.query(
-                'UPDATE publicacion SET titulo = $1, contenido = $2, fecha_actualizacion = NOW() WHERE id_publicacion = $3 AND id_usuario = $4',
-                [titulo, contenido, id_publicacion, id_usuario]
+                'UPDATE publicacion SET titulo = $1, contenido = $2, color_caja = $3, fecha_actualizacion = NOW() WHERE id_publicacion = $4 AND id_usuario = $5',
+                [titulo, contenido, color_caja, id_publicacion, id_usuario]
             );
             res.redirect('/dashboard');
         } catch (err) {
@@ -63,7 +63,6 @@ const postController = {
 
     toggleLike: async (req, res) => {
         if (!req.session.user) return res.status(401).send('No autorizado');
-
         const { id_publicacion } = req.params;
         const id_usuario = req.session.user.id;
 
