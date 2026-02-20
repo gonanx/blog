@@ -30,7 +30,7 @@
                 container.style.color = textColor;
 
                 container.querySelectorAll('h1, h2, label, span, input, textarea, select, .post-date, .post-author, .comments-title, .modal-body').forEach(el => {
-                    if (!el.classList.contains('submit-post-btn')) {
+                    if (!el.classList.contains('submit-post-btn') && !el.closest('.comment-form')) {
                         el.style.color = 'inherit';
                     }
                 });
@@ -90,7 +90,7 @@
                                         <form action="/publicacion/like/<%= post.id_publicacion %>" method="POST"
                                             style="display:inline;" onclick="event.stopPropagation();">
                                             <button type="submit" class="interaction-btn">❤️ <%= post.total_megusta %>
-                                                    </button>
+                                            </button>
                                         </form>
                                         <% } else { %>
                                             <span class="interaction-stat">❤️ <%= post.total_megusta %></span>
@@ -116,12 +116,26 @@
             <div id="viewMode">
                 <div class="post-header">
                     <span id="modalCategory" class="category-tag" style="border: 1px solid currentColor;"></span>
-                    <span id="modalDate" class="post-date"></span>
                 </div>
-                <h1 id="modalTitle"></h1>
+                <div class="title-row">
+                    <h1 id="modalTitle"></h1>
+                    <span class="post-author" id="modalAuthor"></span>
+                </div>
                 <div id="modalBody" class="modal-body"></div>
 
-                <div class="post-footer">
+                <section class="comments-section">
+                    <h3 class="comments-title">Comentarios</h3>
+                    <form id="commentForm" method="POST" class="comment-form">
+                        <textarea name="texto" placeholder="Escribe un comentario..." required></textarea>
+                        <div class="comment-form-footer">
+                            <button type="submit" class="submit-post-btn">Enviar</button>
+                        </div>
+                    </form>
+                    <div id="commentsList" class="comments-list"></div>
+                </section>
+
+                <div class="modal-actions-bar">
+                    <span id="modalDate" class="post-date"></span>
                     <div id="adminActions" style="display: none; gap: 15px;">
                         <button onclick="showEditForm()" class="interaction-btn"
                             style="font-weight: 600;">Editar</button>
@@ -130,18 +144,7 @@
                                 onclick="return confirm('¿Eliminar esta publicación?')">Eliminar</button>
                         </form>
                     </div>
-                    <span class="post-author" id="modalAuthor"></span>
                 </div>
-
-                <section class="comments-section">
-                    <h3 class="comments-title">Comentarios</h3>
-                    <form id="commentForm" method="POST" class="comment-form">
-                        <textarea name="texto" placeholder="Escribe un comentario..." required></textarea>
-                        <button type="submit" class="submit-post-btn"
-                            style="width: auto; padding: 10px 20px; margin-top: 10px;">Enviar</button>
-                    </form>
-                    <div id="commentsList" class="comments-list"></div>
-                </section>
             </div>
 
             <div id="editMode" style="display: none;">
@@ -165,10 +168,11 @@
                             </div>
                         </div>
                         <div style="display: flex; gap: 12px; margin-top: 20px;">
-                            <button type="submit" class="submit-post-btn" style="margin-top:0; flex: 2;">Guardar
+                            <button type="submit" class="submit-post-btn"
+                                style="margin-top:0; flex: 2; filter: none; background: #0071e3; color: white;">Guardar
                                 cambios</button>
                             <button type="button" onclick="hideEditForm()" class="submit-post-btn"
-                                style="margin-top:0; flex: 1; background: #e5e5ea; color: #1d1d1f;">Cancelar</button>
+                                style="margin-top:0; flex: 1; background: #e5e5ea; color: #1d1d1f; filter: none;">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -209,7 +213,8 @@
                             <span id="createColorValue">#FFFFFF</span>
                         </div>
                     </div>
-                    <button type="submit" class="submit-post-btn">Publicar ahora</button>
+                    <button type="submit" class="submit-post-btn"
+                        style="filter: none; background: #0071e3; color: white;">Publicar ahora</button>
                 </form>
             </div>
         </div>
@@ -260,10 +265,10 @@
                     comentarios.forEach(c => {
                         const date = new Date(c.fecha_comentario).toLocaleDateString();
                         commentsList.innerHTML += `
-                            <div class="comment-item" style="border-bottom: 1px solid rgba(128,128,128,0.2); padding: 10px 0;">
-                                <span class="comment-user" style="font-weight: bold;">@${c.nombre}</span>
-                                <p class="comment-text" style="margin: 5px 0;">${c.texto}</p>
-                                <span class="comment-date" style="opacity: 0.6; font-size: 12px;">${date}</span>
+                            <div class="comment-item">
+                                <span class="comment-user">@${c.nombre}</span>
+                                <p class="comment-text">${c.texto}</p>
+                                <span class="comment-date">${date}</span>
                             </div>
                         `;
                     });

@@ -147,7 +147,19 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 12px;
+}
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 24px;
+}
+
+.title-row .post-author {
+    font-size: 18px;
+    opacity: 0.8;
 }
 
 .post-date {
@@ -171,6 +183,7 @@ h2,
 
 .modal-content h1 {
     font-size: 36px;
+    margin-bottom: 0;
 }
 
 .post-excerpt,
@@ -190,11 +203,12 @@ h2,
 }
 
 .modal-body {
-    font-size: 19px;
+    font-size: 18px;
+    margin-bottom: 32px;
 }
 
 .post-footer {
-    margin-top: 20px;
+    margin-top: 24px;
     padding-top: 20px;
     border-top: 1px solid rgba(128, 128, 128, 0.2);
     display: flex;
@@ -270,7 +284,7 @@ h2,
     width: 90%;
     max-width: 800px;
     max-height: 85vh;
-    padding: 50px;
+    padding: 48px;
     box-shadow: 0 30px 100px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow-y: auto;
@@ -284,8 +298,8 @@ h2,
 
 .close-modal {
     position: absolute;
-    top: 25px;
-    right: 25px;
+    top: 24px;
+    right: 24px;
     background: rgba(128, 128, 128, 0.2);
     border: none;
     width: 36px;
@@ -319,86 +333,16 @@ h2,
     transition: transform 0.3s ease, background-color 0.2s;
 }
 
-.create-post-card h2 {
-    font-size: 32px;
-    margin-bottom: 30px;
-    color: inherit;
-}
-
-.create-post-card label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: inherit;
-}
-
-.create-post-card input,
-.create-post-card select,
-.create-post-card textarea {
-    width: 100%;
-    padding: 14px;
-    border-radius: 14px;
-    border: 1px solid rgba(128, 128, 128, 0.3);
-    background: rgba(255, 255, 255, 0.1);
-    font-size: 16px;
-    font-family: inherit;
-    color: inherit !important;
-}
-
-.create-post-card input::placeholder,
-.create-post-card textarea::placeholder {
-    color: inherit;
-    opacity: 0.6;
-}
-
-.color-picker-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 8px 15px;
-    border-radius: 12px;
-    border: 1px solid rgba(128, 128, 128, 0.3);
-}
-
-.color-picker-container input[type="color"] {
-    width: 30px;
-    height: 30px;
-    border: none;
-    background: none;
-    cursor: pointer;
-}
-
-.color-picker-container span {
-    font-family: monospace;
-    font-weight: 600;
-    color: inherit;
-}
-
-.submit-post-btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: 14px;
-    background: var(--apple-blue);
-    color: white;
-    border: none;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
 .comments-section {
-    margin-top: 40px;
-    padding-top: 30px;
+    margin-top: 48px;
+    padding-top: 32px;
     border-top: 1px solid rgba(128, 128, 128, 0.3);
 }
 
 .comments-title {
     font-size: 22px;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     color: inherit;
 }
 
@@ -407,17 +351,70 @@ h2,
     padding: 16px;
     border-radius: 16px;
     border: 1px solid rgba(128, 128, 128, 0.3);
-    background: rgba(255, 255, 255, 0.1);
+    background: #ffffff !important;
+    color: #1d1d1f !important;
     font-size: 15px;
-    color: inherit;
     resize: none;
+    outline: none;
+}
+
+.comment-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.submit-post-btn {
+    background: #ffffff !important;
+    color: #1d1d1f !important;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 12px 24px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.submit-post-btn:hover {
+    background: #f5f5f7 !important;
+    transform: translateY(-1px);
+}
+
+.modal-actions-bar {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(128, 128, 128, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comments-list {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .comment-item {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 18px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 20px;
     border-radius: 18px;
     border: 1px solid rgba(128, 128, 128, 0.1);
+}
+
+.comment-user {
+    font-weight: bold;
+}
+
+.comment-text {
+    margin: 5px 0;
+}
+
+.comment-date {
+    opacity: 0.6;
+    font-size: 12px;
 }
 
 @media (max-width: 1024px) {
@@ -432,6 +429,6 @@ h2,
     }
 
     .modal-content {
-        padding: 30px;
+        padding: 32px;
     }
 }
